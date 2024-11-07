@@ -33,7 +33,7 @@
   
           <div class="form-group">
             <label for="content">内容</label>
-            <textarea id="content" v-model="content" rows="10"></textarea>
+            <div ref="editorContainer" class="quill-editor"></div>
           </div>
   
           <div class="button-group">
@@ -47,6 +47,8 @@
   
   <script>
   import axios from '@/api/axios';
+  import Quill from 'quill';
+  import 'quill/dist/quill.snow.css';
   
   export default {
     data() {
@@ -56,7 +58,8 @@
         tags: [],
         content: '',
         categories: [],
-        tagsList: []
+        tagsList: [],
+        quill: null,
       };
     },
     methods: {
@@ -64,43 +67,57 @@
         try {
           const [categoriesResponse, tagsResponse] = await Promise.all([
             axios.get('/categories'),
-            axios.get('/tags')
+            axios.get('/tags'),
           ]);
           this.categories = categoriesResponse.data;
           this.tagsList = tagsResponse.data;
         } catch (error) {
-          console.error("无法加载分类和标签", error);
+          console.error('无法加载分类和标签', error);
         }
       },
       async submitArticle() {
-  try {
-    const articleData = {
-      title: this.title,
-      category: this.category,
-      tags: this.tags,
-      content: this.content
-    };
-    await axios.post('/posts/create', articleData); // 添加 `/create` 路径
-    alert('文章创建成功！');
-    this.$router.push('/articles'); // 跳转到文章列表页面
-  } catch (error) {
-    console.error("文章创建失败", error);
-  }
-},
+        try {
+          const articleData = {
+            title: this.title,
+            category: this.category,
+            tags: this.tags,
+            content: this.quill.root.innerHTML,
+          };
+          await axios.post('/posts/create', articleData);
+          alert('文章创建成功！');
+          this.$router.push('/articles');
+        } catch (error) {
+          console.error('文章创建失败', error);
+        }
+      },
       goBack() {
-        this.$router.push('/articles'); // 返回文章列表页面
+        this.$router.push('/articles');
       },
       toggleTag(tagId) {
         if (this.tags.includes(tagId)) {
-          this.tags = this.tags.filter(tag => tag !== tagId);
+          this.tags = this.tags.filter((tag) => tag !== tagId);
         } else {
           this.tags.push(tagId);
         }
-      }
+      },
     },
     mounted() {
       this.fetchCategoriesAndTags();
-    }
+  
+      const toolbarOptions = [
+        ['bold', 'italic', 'underline'], // 文本样式
+        [{ list: 'ordered' }, { list: 'bullet' }], // 列表
+        ['link'], // 链接（已去掉图片功能）
+      ];
+  
+      this.quill = new Quill(this.$refs.editorContainer, {
+        theme: 'snow',
+        placeholder: '请输入文章内容...',
+        modules: {
+          toolbar: toolbarOptions,
+        },
+      });
+    },
   };
   </script>
   
@@ -137,9 +154,10 @@
     display: block;
   }
   
-  /* 控制标题和分类框的宽度 */
+  /* 优化后的标题输入框样式，使文字居中 */
   .title-input {
     width: 30%;
+    text-align: center;
   }
   
   .category-input {
@@ -180,6 +198,15 @@
   .tag-selected {
     background-color: #5a67d8;
     color: white;
+  }
+  
+  /* Quill 编辑器样式 */
+  .quill-editor {
+    height: 300px;
+    background-color: #fff;
+    margin-top: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
   }
   
   .button-group {
