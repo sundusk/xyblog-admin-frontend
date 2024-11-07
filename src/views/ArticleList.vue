@@ -1,8 +1,13 @@
 <template>
     <div class="article-list-page">
       <h1 class="page-title">文章管理</h1>
-      <!-- 创建文章按钮 -->
-      <button class="create-article-button" @click="createArticle">创建文章</button>
+      <!-- 创建文章按钮、标签管理按钮、分类管理按钮和测试页面按钮 -->
+      <div class="button-group">
+        <button class="create-article-button" @click="createArticle">创建文章</button>
+        <button class="tag-manager-button" @click="manageTags">标签管理</button>
+        <button class="category-manager-button" @click="manageCategories">分类管理</button>
+        <button class="test-page-button" @click="goToTestPage">测试页面</button>
+      </div>
       <table class="article-table">
         <thead>
           <tr>
@@ -76,7 +81,16 @@
           .join(', ');
       },
       createArticle() {
-        this.$router.push({ name: 'CreateArticle' }); // 跳转到创建文章页面
+        this.$router.push({ name: 'CreateArticle' });
+      },
+      manageTags() {
+        this.$router.push({ name: 'TagManager' });
+      },
+      manageCategories() {
+        this.$router.push({ name: 'CategoryManager' }); // 跳转到分类管理页面
+      },
+      goToTestPage() {
+        this.$router.push({ name: 'TestPage' });
       },
       editArticle(id) {
         console.log("编辑文章 ID:", id);
@@ -103,9 +117,14 @@
     color: #333;
   }
   
-  .create-article-button {
-    padding: 10px 20px;
+  .button-group {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
+  }
+  
+  .create-article-button, .tag-manager-button, .category-manager-button, .test-page-button {
+    padding: 10px 20px;
     background-color: #5a67d8;
     color: white;
     border: none;
@@ -114,7 +133,7 @@
     font-size: 16px;
   }
   
-  .create-article-button:hover {
+  .create-article-button:hover, .tag-manager-button:hover, .category-manager-button:hover, .test-page-button:hover {
     background-color: #434190;
   }
   

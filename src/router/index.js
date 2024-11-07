@@ -1,7 +1,11 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import UserLogin from '@/views/UserLogin.vue';
 import ArticleList from '@/views/ArticleList.vue';
-import CreateArticle from '@/views/CreateArticle.vue'; // 导入创建文章组件
+import CreateArticle from '@/views/CreateArticle.vue';
+import TagManager from '@/views/TagManager.vue';
+import TestPage from '@/views/TestPage.vue'; // 导入TestPage组件
+import CategoryManager from '@/views/CategoryManager.vue'; // 确保路径和名称正确
 
 const routes = [
   {
@@ -21,7 +25,24 @@ const routes = [
   {
     path: '/articles/create',
     name: 'CreateArticle',
-    component: CreateArticle // 创建文章页面路由
+    component: CreateArticle
+  },
+  {
+    path: '/tag-manager',
+    name: 'TagManager',
+    component: TagManager,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/test-page', // 新增TestPage路由
+    name: 'TestPage',
+    component: TestPage
+  },
+  {
+    path: '/category-manager',
+    name: 'CategoryManager',
+    component: CategoryManager, // 确保此处引用的名称正确
+    meta: { requiresAuth: true }
   }
 ];
 
