@@ -1,57 +1,120 @@
 <template>
-    <div class="login-container">
-      <h2>登录</h2>
-      <form @submit.prevent="login">
-        <div>
-          <label for="username">用户名:</label>
-          <input v-model="username" type="text" id="username" required />
-        </div>
-        <div>
-          <label for="password">密码:</label>
-          <input v-model="password" type="password" id="password" required />
-        </div>
-        <button type="submit">登录</button>
-      </form>
-      <p v-if="errorMessage">{{ errorMessage }}</p>
+  <div class="login-page">
+    <h1 class="system-title">Sundusk 博客管理系统</h1>
+    <div class="login-card">
+      <h2 class="login-title">登录</h2>
+      <input type="text" placeholder="账号" class="input-field" v-model="username" />
+      <input type="password" placeholder="密码" class="input-field" v-model="password" />
+      <button class="login-button" @click="handleLogin">登录</button>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
-  </template>
-  
-  <script>
-  import axios from '@/api/axios';
-  
-  export default {
-    data() {
-      return {
-        username: '',
-        password: '',
-        errorMessage: ''
-      };
-    },
-    methods: {
-      async login() {
-        try {
-          const response = await axios.post('/auth/login', {
-            username: this.username,
-            password: this.password
-          });
-          const token = response.data.token;
-          localStorage.setItem('token', token); // 保存令牌
-          this.$router.push('/dashboard'); // 登录成功后跳转到 Dashboard
-        } catch (error) {
-          this.errorMessage = '登录失败，请检查用户名或密码';
-        }
+  </div>
+</template>
+
+<script>
+import axios from '@/api/axios'; // 引入 Axios 实例
+
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      errorMessage: ''
+    };
+  },
+  methods: {
+    async handleLogin() {
+      try {
+        const response = await axios.post('/auth/login', {
+        username: this.username,
+        password: this.password
+       });
+      const { token } = response.data;
+      localStorage.setItem('token', token); // 存储 JWT 令牌
+      this.$router.push('/articles'); // 登录成功后跳转到文章管理页面
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || '登录失败';
       }
     }
-  };
-  </script>
-  
-  <style scoped>
-  .login-container {
-    max-width: 300px;
-    margin: 100px auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
   }
-  </style>
+};
+</script>
+
+<style scoped>
+.login-page {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.system-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.login-card {
+  background: linear-gradient(to bottom, #8ec5fc, #e0c3fc); /* 卡片渐变背景 */
+  padding: 40px;
+  width: 400px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.login-title {
+  color: #fff;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: calc(100% - 24px);
+  padding: 12px;
+  margin: 12px auto;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  display: block;
+}
+
+.login-button {
+  width: calc(100% - 24px);
+  padding: 12px;
+  margin: 0 auto;
+  background-color: #5a67d8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+}
+
+.login-button:hover {
+  background-color: #434190;
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 14px;
+  margin-top: 10px;
+}
+</style>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #e0f0ff;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
