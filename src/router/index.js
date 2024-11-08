@@ -3,9 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import UserLogin from '@/views/UserLogin.vue';
 import ArticleList from '@/views/ArticleList.vue';
 import CreateArticle from '@/views/CreateArticle.vue';
+import EditArticle from '@/views/EditArticle.vue'; // 导入编辑文章组件
 import TagManager from '@/views/TagManager.vue';
-import TestPage from '@/views/TestPage.vue'; // 导入TestPage组件
-import CategoryManager from '@/views/CategoryManager.vue'; // 确保路径和名称正确
+import TestPage from '@/views/TestPage.vue';
+import CategoryManager from '@/views/CategoryManager.vue';
 
 const routes = [
   {
@@ -28,20 +29,26 @@ const routes = [
     component: CreateArticle
   },
   {
+    path: '/articles/edit/:id', // 编辑文章页面，带有文章ID参数
+    name: 'EditArticle',
+    component: EditArticle,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/tag-manager',
     name: 'TagManager',
     component: TagManager,
     meta: { requiresAuth: true }
   },
   {
-    path: '/test-page', // 新增TestPage路由
+    path: '/test-page',
     name: 'TestPage',
     component: TestPage
   },
   {
     path: '/category-manager',
     name: 'CategoryManager',
-    component: CategoryManager, // 确保此处引用的名称正确
+    component: CategoryManager,
     meta: { requiresAuth: true }
   }
 ];

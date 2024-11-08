@@ -87,13 +87,13 @@
         this.$router.push({ name: 'TagManager' });
       },
       manageCategories() {
-        this.$router.push({ name: 'CategoryManager' }); // 跳转到分类管理页面
+        this.$router.push({ name: 'CategoryManager' });
       },
       goToTestPage() {
         this.$router.push({ name: 'TestPage' });
       },
       editArticle(id) {
-        console.log("编辑文章 ID:", id);
+        this.$router.push({ name: 'EditArticle', params: { id } });
       },
       async deleteArticle(id) {
         try {
