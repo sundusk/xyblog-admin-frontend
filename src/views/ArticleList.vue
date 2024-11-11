@@ -24,7 +24,7 @@
       </select>
     </div>
 
-    <!-- 创建文章按钮、标签管理按钮、分类管理按钮和测试页面按钮 -->
+    <!-- 创建文章按钮和其他管理按钮 -->
     <div class="button-group">
       <button class="create-article-button" @click="createArticle">创建文章</button>
       <button class="tag-manager-button" @click="manageTags">标签管理</button>
@@ -43,7 +43,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="article in filteredArticles" :key="article._id">
+        <tr v-for="article in paginatedArticles" :key="article._id">
           <td>{{ article.title }}</td>
           <td>{{ getCategoryName(article.category) }}</td>
           <td>{{ getTagNames(article.tags) }}</td>
@@ -54,6 +54,13 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- 分页 -->
+    <div class="pagination">
+      <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+      <span>第 {{ currentPage }} 页 / 共 {{ totalPages }} 页</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
+    </div>
   </div>
 </template>
 
@@ -68,11 +75,12 @@ export default {
       tags: [],
       searchKeyword: '',
       selectedCategory: '',
-      selectedTag: ''
+      selectedTag: '',
+      currentPage: 1,
+      articlesPerPage: 5 // 每页显示的文章数量
     };
   },
   computed: {
-    // 计算过滤后的文章列表
     filteredArticles() {
       return this.articles.filter((article) => {
         const matchesKeyword =
@@ -83,6 +91,14 @@ export default {
           this.selectedTag === '' || article.tags.includes(this.selectedTag);
         return matchesKeyword && matchesCategory && matchesTag;
       });
+    },
+    paginatedArticles() {
+      const start = (this.currentPage - 1) * this.articlesPerPage;
+      const end = start + this.articlesPerPage;
+      return this.filteredArticles.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredArticles.length / this.articlesPerPage);
     }
   },
   methods: {
@@ -144,6 +160,12 @@ export default {
       } catch (error) {
         console.error("删除失败", error);
       }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) this.currentPage++;
+    },
+    prevPage() {
+      if (this.currentPage > 1) this.currentPage--;
     }
   },
   async mounted() {
@@ -203,6 +225,14 @@ export default {
 .article-table th {
   background-color: #f5f5f5;
   font-weight: bold;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 button {
