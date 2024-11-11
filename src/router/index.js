@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import UserLogin from '@/views/UserLogin.vue';
 import ArticleList from '@/views/ArticleList.vue';
@@ -7,6 +6,7 @@ import EditArticle from '@/views/EditArticle.vue'; // 导入编辑文章组件
 import TagManager from '@/views/TagManager.vue';
 import TestPage from '@/views/TestPage.vue';
 import CategoryManager from '@/views/CategoryManager.vue';
+import DraftBox from '@/views/DraftBox.vue'; // 导入草稿箱组件
 
 const routes = [
   {
@@ -49,6 +49,12 @@ const routes = [
     path: '/category-manager',
     name: 'CategoryManager',
     component: CategoryManager,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/draft-box', // 草稿箱页面路由
+    name: 'DraftBox',
+    component: DraftBox,
     meta: { requiresAuth: true }
   }
 ];

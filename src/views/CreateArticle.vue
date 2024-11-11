@@ -2,7 +2,7 @@
   <div class="create-article-page">
     <div class="card">
       <h1 class="page-title">创建文章</h1>
-      <form @submit.prevent="submitArticle">
+      <form>
         <div class="form-group">
           <label for="title">标题</label>
           <input type="text" id="title" v-model="title" class="title-input" required />
@@ -15,7 +15,6 @@
               {{ cat.name }}
             </option>
           </select>
-          <!-- 分类描述显示 -->
           <p v-if="categoryDescription" class="category-description">{{ categoryDescription }}</p>
         </div>
 
@@ -39,8 +38,8 @@
         </div>
 
         <div class="button-group">
-          <button type="button" class="back-button" @click="goBack">返回</button>
-          <button type="submit" class="save-button">保存</button>
+          <button type="button" class="draft-button" @click="saveAsDraft">保存为草稿</button>
+          <button type="button" class="publish-button" @click="publishArticle">发布</button>
         </div>
       </form>
     </div>
@@ -62,7 +61,7 @@ export default {
       categories: [],
       tagsList: [],
       quill: null,
-      categoryDescription: '' // 新增字段用于存储当前分类的描述
+      categoryDescription: ''
     };
   },
   methods: {
@@ -82,23 +81,28 @@ export default {
       const selectedCategory = this.categories.find(cat => cat._id === this.category);
       this.categoryDescription = selectedCategory ? selectedCategory.description : '';
     },
-    async submitArticle() {
+    async saveAsDraft() {
+      await this.submitArticle('draft');
+    },
+    async publishArticle() {
+      await this.submitArticle('published');
+    },
+    async submitArticle(status) {
       try {
         const articleData = {
           title: this.title,
           category: this.category,
           tags: this.tags,
           content: this.quill.root.innerHTML,
+          status: status // 将草稿或发布状态传递到后端
         };
         await axios.post('/posts/create', articleData);
-        alert('文章创建成功！');
+        alert(`文章${status === 'draft' ? '已保存为草稿' : '已发布'}！`);
         this.$router.push('/articles');
       } catch (error) {
-        console.error('文章创建失败', error);
+        console.error('文章提交失败', error);
+        alert(`提交文章时出错: ${error.response?.data?.message || '未知错误'}`);
       }
-    },
-    goBack() {
-      this.$router.push('/articles');
     },
     toggleTag(tagId) {
       if (this.tags.includes(tagId)) {
@@ -170,14 +174,13 @@ label {
   width: 20%;
 }
 
-/* 新增分类描述样式 */
 .category-description {
   color: #888;
   font-size: 14px;
   margin-top: 5px;
 }
 
-input, select, textarea {
+.input, select, textarea {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
@@ -227,7 +230,7 @@ input, select, textarea {
   gap: 10px;
 }
 
-.save-button, .back-button {
+.draft-button, .publish-button {
   padding: 10px 20px;
   font-size: 16px;
   border-radius: 5px;
@@ -235,21 +238,21 @@ input, select, textarea {
   border: none;
 }
 
-.save-button {
-  background-color: #5a67d8;
-  color: white;
-}
-
-.save-button:hover {
-  background-color: #434190;
-}
-
-.back-button {
+.draft-button {
   background-color: #e0e0e0;
   color: #333;
 }
 
-.back-button:hover {
+.draft-button:hover {
   background-color: #c0c0c0;
+}
+
+.publish-button {
+  background-color: #5a67d8;
+  color: white;
+}
+
+.publish-button:hover {
+  background-color: #434190;
 }
 </style>

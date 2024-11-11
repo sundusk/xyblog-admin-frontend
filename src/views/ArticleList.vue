@@ -7,7 +7,7 @@
       <input
         type="text"
         v-model="searchKeyword"
-        placeholder="搜索标题..."
+        placeholder="搜索..."
         class="search-input"
       />
       <select v-model="selectedCategory" class="category-filter">
@@ -30,6 +30,7 @@
       <button class="tag-manager-button" @click="manageTags">标签管理</button>
       <button class="category-manager-button" @click="manageCategories">分类管理</button>
       <button class="test-page-button" @click="goToTestPage">测试页面</button>
+      <button class="draft-box-button" @click="goToDraftBox">草稿箱</button> <!-- 新增草稿箱按钮 -->
     </div>
 
     <!-- 文章列表 -->
@@ -104,7 +105,9 @@ export default {
   methods: {
     async fetchArticles() {
       try {
-        const response = await axios.get('/posts');
+        const response = await axios.get('/posts', {
+          params: { status: 'published' } // 仅获取已发布的文章
+        });
         this.articles = response.data;
       } catch (error) {
         console.error("无法获取文章列表", error);
@@ -150,6 +153,9 @@ export default {
     goToTestPage() {
       this.$router.push({ name: 'TestPage' });
     },
+    goToDraftBox() {
+      this.$router.push({ name: 'DraftBox' }); // 跳转到草稿箱页面
+    },
     editArticle(id) {
       this.$router.push({ name: 'EditArticle', params: { id } });
     },
@@ -191,7 +197,8 @@ export default {
 .create-article-button,
 .tag-manager-button,
 .category-manager-button,
-.test-page-button {
+.test-page-button,
+.draft-box-button {
   padding: 10px 20px;
   background-color: #5a67d8;
   color: white;
